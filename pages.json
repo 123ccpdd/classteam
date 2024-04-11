@@ -1,14 +1,20 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index"
+			"path": "pages/login/login"
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"enablePullDownRefresh": true
+			}
 		},
 		{
 			"path" : "pages/cart/cart",
 			"style" : 
 			{
 				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+				"enablePullDownRefresh" : true
 			}
 		},
 		{
@@ -16,7 +22,7 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+				"enablePullDownRefresh" : true
 			}
 		},
 		{
@@ -24,38 +30,15 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+				"enablePullDownRefresh" : true
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "黑马商城",
-		"navigationBarBackgroundColor": "#b50e03",
+		"navigationBarTitleText": "班级圈",
+		"navigationBarBackgroundColor": "#1CB1F6",
 		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"selectedColor": "#b50e03",
-		"list": [
-			{
-				"text": "首页",
-				"pagePath": "pages/index/index",
-				"iconPath": "static/首页.png"
-			},
-			{
-				"text": "咨询",
-				"pagePath": "pages/news/news",
-				"iconPath": "static/订单.png"
-			},
-			{
-				"text": "购物车",
-				"pagePath": "pages/cart/cart",
-				"iconPath": "static/订单查询.png"
-			},			{
-				"text": "我的",
-				"pagePath": "pages/myself/myself",
-				"iconPath": "static/我的.png"
-			}
-		]
+	}
 	}
 }
