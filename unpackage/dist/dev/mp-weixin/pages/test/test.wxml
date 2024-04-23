@@ -1,0 +1,1 @@
+<view><view class="uni-padding-wrap"><view wx:if="{{a}}"><image mode="widthFix" src="{{b}}"/></view><button type="primary" bindtap="{{c}}">拍摄图片并保存到本地</button><view wx:if="{{d}}"><video id="myVideo" src="{{e}}" binderror="{{f}}" enable-danmu danmu-btn controls></video></view><button type="primary" bindtap="{{g}}">录制视频并保存到本地</button></view></view>

@@ -1,1 +1,1 @@
-<view class="title"> 首页 </view>
+<view class="container"><uni-section wx:if="{{d}}" u-s="{{['d']}}" style="margin-bottom:3px" u-i="4972139d-0" bind:__l="__l" u-p="{{d}}"><view class="box-bg"><uni-nav-bar wx:if="{{c}}" bindclickLeft="{{a}}" bindclickRight="{{b}}" u-i="4972139d-1,4972139d-0" bind:__l="__l" u-p="{{c}}"/></view></uni-section></view><view class=""></view><image style="width:100%;height:200px" src="/static/index2.jpg" mode="scaleToFill"></image>

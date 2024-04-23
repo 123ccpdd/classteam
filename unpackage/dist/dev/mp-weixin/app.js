@@ -2,17 +2,21 @@
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("./common/vendor.js");
 if (!Math) {
+  "./pages/login/login.js";
   "./pages/index/index.js";
   "./pages/cart/cart.js";
-  "./pages/news/news.js";
+  "./pages/share/share.js";
   "./pages/myself/myself.js";
+  "./pages/test/test.js";
 }
 const _sfc_main = {
-  onLaunch: function() {
+  onLaunch: function(options) {
     console.log("App Launch");
+    console.log("应用启动路径：", options.path);
   },
-  onShow: function() {
+  onShow: function(options) {
     console.log("App Show");
+    console.log("应用启动路径：", options.path);
   },
   onHide: function() {
     console.log("App Hide");

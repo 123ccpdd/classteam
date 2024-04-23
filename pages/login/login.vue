@@ -6,7 +6,7 @@
 		<image class="img-b" src="https://zhoukaiwen.com/img/loginImg/3.png"></image>
 		<!-- 标题 -->
 		<view class="t-b">{{ title }}</view>
-		<view class="t-b2">欢迎使用，XXX小程序</view>
+		<view class="t-b2">班级圈，家长老师的最好陪伴！</view>
 		<form class="cl">
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/sj.png"></image>
@@ -33,7 +33,7 @@
 export default {
 	data() {
 		return {
-			title: '欢迎回来！', //填写logo或者app名称，也可以用：欢迎回来，看您需求
+			title: '欢迎回到班级！', //填写logo或者app名称，也可以用：欢迎回来，看您需求
 			second: 60, //默认60秒
 			showText: true, //判断短信是否发送
 			phone: '', //手机号码
@@ -45,20 +45,24 @@ export default {
 		//当前登录按钮操作
 		login() {
 			var that = this;
-			if (!that.phone) {
-				uni.showToast({ title: '请输入手机号', icon: 'none' });
-				return;
-			}
-			if (!/^[1][3,4,5,7,8,9][0-9]{9}$/.test(that.phone)) {
-				uni.showToast({ title: '请输入正确手机号', icon: 'none' });
-				return;
-			}
-			if (!that.yzm) {
-				uni.showToast({ title: '请输入验证码', icon: 'none' });
-				return;
-			}
-			//....此处省略，这里需要调用后台验证一下验证码是否正确，根据您的需求来
+			// if (!that.phone) {
+			// 	uni.showToast({ title: '请输入手机号', icon: 'none' });
+			// 	return;
+			// }
+			// if (!/^[1][3,4,5,7,8,9][0-9]{9}$/.test(that.phone)) {
+			// 	uni.showToast({ title: '请输入正确手机号', icon: 'none' });
+			// 	return;
+			// }
+			// if (!that.yzm) {
+			// 	uni.showToast({ title: '请输入验证码', icon: 'none' });
+			// 	return;
+			// }
+			//这里暂时关闭，开发完成后打开
+			//这里可以调用后台验证一下验证码是否正确
 			uni.showToast({ title: '登录成功！', icon: 'none' });
+			uni.reLaunch({
+				url:'/pages/index/index'
+			})
 		},
 		//获取短信验证码
 		getCode() {
@@ -89,7 +93,7 @@ export default {
 		},
 		//第三方支付宝登录
 		zfbLogin() {
-			uni.showToast({ title: '支付宝登录', icon: 'none' });
+			uni.showToast({ title: 'qq登录', icon: 'none' });
 		}
 	}
 };

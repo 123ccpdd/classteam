@@ -8,7 +8,6 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "欢迎来到班级圈",
 				"enablePullDownRefresh": true
 			}
 		},
@@ -21,10 +20,11 @@
 			}
 		},
 		{
-			"path" : "pages/news/news",
+			"path" : "pages/share/share",
 			"style" : 
 			{
-				"navigationBarTitleText" : "",
+				//"navigationStyle":"custom",
+				// 此处禁用导航栏
 				"enablePullDownRefresh" : true
 			}
 		},
@@ -35,10 +35,18 @@
 				"navigationBarTitleText" : "",
 				"enablePullDownRefresh" : true
 			}
+		},
+		{
+			"path" : "pages/test/test",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
 		}
 	],
 	"globalStyle": {
-		
+			//"navigationStyle":"custom"
 	}
 	}
 }
