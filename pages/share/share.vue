@@ -183,7 +183,7 @@
 						});
 						setTimeout(() => {
 							uni.redirectTo({
-								url: '/pages/community/community'
+								url: '/pages/index/index'
 							});
 						}, 1500)
 					}
@@ -286,5 +286,3 @@
 		border-radius: 6rpx
 	}
 </style>
-
-

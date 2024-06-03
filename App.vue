@@ -18,4 +18,8 @@
 
 <style>
 	/*每个页面公共css */
+	@font-face{
+		font-family: 'MyFont';
+		src: url('static/fonts/TsangerYuYangT_W01_W01.ttf') format('truetype');
+	}
 </style>

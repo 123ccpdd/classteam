@@ -16,11 +16,11 @@
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/yz.png"></image>
 				<view class="line"></view>
-				<input type="number" name="code" maxlength="6" placeholder="请输入验证码" v-model="yzm" />
-				<view v-if="showText" class="t-c" @tap="getCode()">发送短信</view>
-				<view v-else class="t-c" style="background-color: #A7A7A7;">重新发送({{ second }})</view>
+				<input type="number" name="code" maxlength="6" placeholder="请输入密码" v-model="yzm" />
 			</view>
 			<button @tap="login()">登 录</button>
+			<br />
+			<button @tap="register()">注册</button>
 		</form>
 		<view class="t-f"><text>————— 第三方账号登录 —————</text></view>
 		<view class="t-e cl">
@@ -36,11 +36,11 @@ export default {
 			title: '欢迎回到班级！', //填写logo或者app名称，也可以用：欢迎回来，看您需求
 			second: 60, //默认60秒
 			showText: true, //判断短信是否发送
-			phone: '', //手机号码
-			yzm: '' //验证码
 		};
 	},
-	onLoad() {},
+	onLoad() {
+		this.getLogin();
+	},
 	methods: {
 		//当前登录按钮操作
 		login() {
@@ -64,6 +64,11 @@ export default {
 				url:'/pages/index/index'
 			})
 		},
+		register(){
+			uni.reLaunch({
+				url:'/pages/register/register'
+			})
+		},
 		//获取短信验证码
 		getCode() {
 			var that = this;
@@ -80,12 +85,6 @@ export default {
 				that.showText = true;
 			}, 60000);
 			//这里请求后台获取短信验证码
-			uni.request({
-				//......//此处省略
-				success: function(res) {
-					that.showText = false;
-				}
-			});
 		},
 		//等三方微信登录
 		wxLogin() {
@@ -94,6 +93,15 @@ export default {
 		//第三方支付宝登录
 		zfbLogin() {
 			uni.showToast({ title: 'qq登录', icon: 'none' });
+		},
+		//登录验证（未开发）
+		getLogin(){
+			uni.request({
+				url: 'http://localhost:8080/', 
+				success: (res) => {
+					console.log(res);
+				}
+			});
 		}
 	}
 };
