@@ -8,15 +8,25 @@
 		<view class="t-b">{{ title }}</view>
 		<view class="t-b2">班级圈，家长老师的最好陪伴！</view>
 		<form class="cl">
+			<!-- 教师家长选择框 -->
+			<radio-group @change="rolechange" name="radio" class="label-flex" v-model="role">
+				<label>
+					<radio value="student"/><text>家长</text>
+				</label>
+				<label>
+					<radio value="teacher"/><text>教师</text>
+				</label>
+			</radio-group>
+			
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/sj.png"></image>
 				<view class="line"></view>
-				<input type="number" name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
+				<input name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
 			</view>
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/yz.png"></image>
 				<view class="line"></view>
-				<input type="number" name="code" maxlength="6" placeholder="请输入密码" v-model="yzm" />
+				<input name="code" maxlength="6" placeholder="请输入密码" v-model="password" />
 			</view>
 			<button @tap="login()">登 录</button>
 			<br />
@@ -34,57 +44,43 @@ export default {
 	data() {
 		return {
 			title: '欢迎回到班级！', //填写logo或者app名称，也可以用：欢迎回来，看您需求
-			second: 60, //默认60秒
-			showText: true, //判断短信是否发送
+			role:'',
+			phone: 'root',
+			password:'root',
 		};
 	},
 	onLoad() {
-		this.getLogin();
+		this.getLoading();
+		console.log(this.role);
 	},
 	methods: {
 		//当前登录按钮操作
 		login() {
-			var that = this;
-			// if (!that.phone) {
-			// 	uni.showToast({ title: '请输入手机号', icon: 'none' });
-			// 	return;
-			// }
-			// if (!/^[1][3,4,5,7,8,9][0-9]{9}$/.test(that.phone)) {
-			// 	uni.showToast({ title: '请输入正确手机号', icon: 'none' });
-			// 	return;
-			// }
-			// if (!that.yzm) {
-			// 	uni.showToast({ title: '请输入验证码', icon: 'none' });
-			// 	return;
-			// }
-			//这里暂时关闭，开发完成后打开
-			//这里可以调用后台验证一下验证码是否正确
-			uni.showToast({ title: '登录成功！', icon: 'none' });
-			uni.reLaunch({
-				url:'/pages/index/index'
-			})
+			//admin1 11111
+			//admin2 22222
+			//admin3 33333
+			if(this.phone == 'admin1' && this.password=='11111'){
+				uni.showToast({
+					title:'管理员账号登录成功！'
+				})
+				uni.reLaunch({
+					url:'/pages/manager/manager'
+				})
+			}
+			if(this.phone == 'root' && this.password == 'root'){
+				uni.reLaunch({
+					url:'/pages/index/index'
+				})
+			}
+			// uni.showToast({ title: '登录成功！', icon: 'none' });
+			// uni.reLaunch({
+			// 	url:'/pages/index/index'
+			// })
 		},
 		register(){
 			uni.reLaunch({
 				url:'/pages/register/register'
 			})
-		},
-		//获取短信验证码
-		getCode() {
-			var that = this;
-			var interval = setInterval(() => {
-				that.showText = false;
-				var times = that.second - 1;
-				//that.second = times<10?'0'+times:times ;//小于10秒补 0
-				that.second = times;
-				console.log(times);
-			}, 1000);
-			setTimeout(() => {
-				clearInterval(interval);
-				that.second = 60;
-				that.showText = true;
-			}, 60000);
-			//这里请求后台获取短信验证码
 		},
 		//等三方微信登录
 		wxLogin() {
@@ -95,14 +91,48 @@ export default {
 			uni.showToast({ title: 'qq登录', icon: 'none' });
 		},
 		//登录验证（未开发）
-		getLogin(){
+		login(){
+			uni.request({
+			        url: 'http://localhost:8080/api/teachers/login', // 替换为你的实际 API 端点
+			        method: 'POST',
+						header: {
+							'Content-Type': 'application/json'
+						},
+					// withCredentials:true,
+					// 允许发送
+			        data: {
+						phone:this.phone,
+						password:this.password,
+						  },
+			        success: (response) => {
+			          console.log('成功:', response.data);
+			          uni.showToast({
+			            title: '登录成功',
+			            icon: 'success'
+			          });
+					  uni.reLaunch({
+					  	url:'/pages/index/index'
+					  })
+			          // 处理成功的响应
+			        },
+			        fail: (error) => {
+			          console.error('错误:', error);
+			          uni.showToast({
+			            title: '登录失败',
+			            icon: 'none'
+			          });
+			          // 处理错误的响应
+			        }
+			      });
+		},
+		getLoading(){
 			uni.request({
 				url: 'http://localhost:8080/', 
 				success: (res) => {
 					console.log(res);
 				}
 			});
-		}
+		},
 	}
 };
 </script>
@@ -245,5 +275,10 @@ export default {
 	visibility: hidden;
 	height: 0;
 	content: '\20';
+}
+.label-flex {
+  display: flex;
+  gap: 100px; /* 使用 gap 属性设置水平间距 */
+  margin-bottom: 20px;
 }
 </style>

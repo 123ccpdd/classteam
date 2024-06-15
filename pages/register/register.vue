@@ -9,30 +9,92 @@
 			请按照提示填写信息，1分钟即可加入班级！
 		</view>
 		<form class="c1">
-			<radio-group name="radio" class="label-flex" v-model="role">
+			<radio-group @change="registerchange" name="radio" class="label-flex" v-model="role">
 				<label>
-					<radio value="student" /><text>学生/家长</text>
+					<radio value="student"/><text>家长</text>
 				</label>
 				<label>
-					<radio value="teacher" /><text>老师</text>
+					<radio value="teacher"/><text>教师</text>
 				</label>
 			</radio-group>
-			<view class="t-a">
-				<input type="number" name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
+			<!-- 此处是家长注册界面 -->
+			<view class="student-register" v-if="role === 'student'">
+				<view class="t-a">
+					<input name="name" placeholder="请输入姓名" v-model="name" />
+				</view>
+				<view class="t-a">
+					<input name="sex" placeholder="请输入性别" v-model="sex"/>
+				</view>
+				<view class="t-a">
+					<input type="number" name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
+				</view>
+				<view class="t-a">
+					<input type="number" name="password" placeholder="请输入密码" maxlength="11" v-model="password" />
+				</view>
+				<view class="t-a">
+					<input type="number" name="password" placeholder="请再次输入密码" maxlength="11" v-model="confirmpassword" />
+				</view>
 			</view>
-			<view class="t-a">
-				<input type="number" name="password" placeholder="请输入密码" maxlength="11" v-model="password" />
+			<!-- 此处是教师注册页面 -->
+			<view class="student-register" v-if="role === 'teacher'">
+				<view class="t-b3">
+					尊敬的教师您好,您是否为班主任？
+				</view>
+				<checkbox-group name="headermaster" class="checkbox1" @change="checkbox1">
+					<label>
+						<checkbox value="1" /><text>是的</text>
+					</label>
+				</checkbox-group>
+				<view class="uni-list">
+					<view class="uni-list-cell">
+						<view class="uni-list-cell-left">
+							当前选择
+						</view>
+						<view class="uni-list-cell-db">
+							<picker @change="bindPickerChange" :value="index" :range="array">
+								<view class="uni-input">{{array[index]}}</view>
+							</picker>
+						</view>
+					</view>
+				</view>
+				<view class="t-a">
+					{{ismaster}}
+				</view>
+				<view class="t-a">
+					<input name="name" placeholder="请输入姓名" v-model="name" />
+				</view>
+				<view class="t-a">
+					<input name="sex" placeholder="请输入性别" v-model="sex"/>
+				</view>
+				<view class="t-a">
+					<input name="school" placeholder="请输入学校" v-model="school"/>
+				</view>
+				<view class="t-a">
+					<input name="class" placeholder="请输入班级" v-model="class"/>
+				</view>
+				<view class="t-a">
+					<input type="number" name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
+				</view>
+				<view class="t-a">
+					<input type="number" name="password" placeholder="请输入密码" maxlength="11" v-model="password" />
+				</view>
+				<view class="t-a">
+					<input type="number" name="password" placeholder="请再次输入密码" maxlength="11" v-model="confirmpassword" />
+				</view>
 			</view>
-			<view class="t-a">
-				<input type="number" name="phone" placeholder="请再次输入密码" maxlength="11" v-model="comfirmpassword" />
-			</view>
-
-			<button @tap="register()">注册</button>
+			<button @tap="submitForm()">注册</button>
 		</form>
 	</view>
 </template>
 
 <script>
+	function setCookie(c_name,value,expireseconds){
+	    var exdate=new Date();
+	    exdate.setTime(exdate.getTime()+expireseconds * 1000);
+	    document.cookie=c_name+ "=" +escape(value)+
+	    ((expireseconds==null) ? "" : ";expires="+exdate.toGMTString())
+	}
+	
 	export default {
 		data() {
 			return {
@@ -40,21 +102,26 @@
 				second:60,
 				showText:true,
 				role:'',
+				name:'',
+				sex:'',
+				school:'',
+				class:'',
 				phone:'',
 				password:'',
-				comfirmpassword:'',
+				confirmpassword:'',
+				index:0,
+				array:['语文','数学','英语','物理','化学','生物','政治','历史','地理'],
+				ismaster:0,
 			}
 		},
 		methods: {
-			register(){
-				uni.showToast({
-					title:'注册成功！'
-				})
-				uni.reLaunch({
-					url:'/pages/login/login'
-				})
-			},
 			submitForm() {
+				// 调试打开
+				// if(this.ismaster == 1){
+				//   uni.reLaunch({
+				// 	url:'/pages/header-teacher/header-teacher'
+				//   })
+				// }
 			  // 表单验证，例如检查密码是否一致
 			  if (this.password !== this.confirmpassword) {
 				uni.showToast({
@@ -63,37 +130,69 @@
 				});
 				return;
 			  }
-
-			  const formData = {
-				role: this.role,
-				phone: this.phone,
-				password: this.password
-			  };
+			  
+			  if(this.phone == 'null'){
+				  uni.showKeyboard();
+			  }
+			
 			uni.request({
-			        url: 'http://localhost:8080/', // 替换为你的实际 API 端点
+			        url: 'http://localhost:8080/api/teachers/register', // 替换为你的实际 API 端点
 			        method: 'POST',
-			        data: formData,
+			        data: {
+						name:this.name,
+						sex:this.sex,
+						school:this.school,
+						class:this.class,
+						phone: this.phone,
+						password: this.password,
+						subject:this.array[this.index],
+						ismaster:this.ismaster
+					  },
 			        success: (response) => {
-			          console.log('成功:', response.data);
+			          console.log('后端响应结果:', response.data);
+					  alert(response.data);
+					  console.log('后端id:',response.data.id);			  
+					  setCookie('header-teacher-id',response.data.id,3600);
 			          uni.showToast({
-			            title: '提交成功',
+			            title: '注册成功',
 			            icon: 'success'
 			          });
+					  if(this.ismaster == 1){
+						  uni.reLaunch({
+						  	url:'/pages/header-teacher/header-teacher'
+						  })
+					  }
+					  else{
+						  uni.reLaunch({
+						  	url:'/pages/login/login'
+						  })
+					  }
 			          // 处理成功的响应
 			        },
 			        fail: (error) => {
 			          console.error('错误:', error);
 			          uni.showToast({
-			            title: '提交失败',
+			            title: '注册失败',
 			            icon: 'none'
 			          });
 			          // 处理错误的响应
 			        }
 			      });
-		}
+		},
+		registerchange(e){
+			this.role = e.detail.value
+		},
+		bindPickerChange: function(e) {
+			console.log('是否班主任，携带值为', e.detail.value)
+			this.index = e.detail.value
+		},
+		checkbox1(e){
+			if(e.detail.value == 1){
+				this.ismaster = 1;
+			}else(this.ismaster = 0)
+		},
 	},
-	}
-	
+};
 </script>
 
 <style>
@@ -179,7 +278,14 @@
 	color: #aaaaaa;
 	padding: 0rpx 0 120rpx 0;
 }
-
+.t-b3{
+	text-align: left;
+	font-size: 32rpx;
+	color: #aaaaaa;
+	padding: 0rpx 0 30rpx 0;
+    position: relative;
+    z-index: 999;
+}
 .t-login .t-c {
 	position: absolute;
 	right: 22rpx;
@@ -242,4 +348,53 @@
 	height: 0;
 	content: '\20';
 }
+
+.checkbox1{
+	position: relative;
+	padding-bottom: 20rpx;
+}
+.uni-list {
+	background-color: #FFFFFF;
+	position: relative;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.uni-list:after {
+	position: absolute;
+	z-index: 10;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	content: '';
+	-webkit-transform: scaleY(.5);
+	transform: scaleY(.5);
+	background-color: #c8c7cc;
+}
+.uni-list-cell {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.uni-list-cell-left {
+    white-space: nowrap;
+	font-size:28rpx;
+	padding: 0 30rpx;
+}
+.uni-list-cell-db,
+.uni-list-cell-right {
+	flex: 1;
+}
+.uni-input {
+	height: 50rpx;
+	padding: 15rpx 25rpx;
+	line-height:50rpx;
+	font-size:28rpx;
+	background:#FFF;
+	flex: 1;
+}
+
 </style>

@@ -1,8 +1,15 @@
 {
-  "hash": "24c4191e",
+  "hash": "676f7015",
   "configHash": "c45c38b5",
-  "lockfileHash": "f7d93271",
-  "browserHash": "d5eba661",
-  "optimized": {},
+  "lockfileHash": "730d2ed1",
+  "browserHash": "215542e7",
+  "optimized": {
+    "express": {
+      "src": "../../../../../../../../node_modules/express/index.js",
+      "file": "express.js",
+      "fileHash": "9e567681",
+      "needsInterop": true
+    }
+  },
   "chunks": {}
 }
