@@ -1,20 +1,20 @@
-<!-- 蓝色简洁登录页面 -->
 <template>
 	<view class="t-login">
-		<!-- 页面装饰图片 -->
 		<image class="img-a" src="https://zhoukaiwen.com/img/loginImg/2.png"></image>
 		<image class="img-b" src="https://zhoukaiwen.com/img/loginImg/3.png"></image>
-		<!-- 标题 -->
 		<view class="t-b">{{ title }}</view>
 		<view class="t-b2">班级圈，家长老师的最好陪伴！</view>
 		<form class="cl">
 			<!-- 教师家长选择框 -->
-			<radio-group @change="rolechange" name="radio" class="label-flex" v-model="role">
+			<radio-group name="radio" class="label-flex" :value="role" @change="radioChange">
 				<label>
-					<radio value="student"/><text>家长</text>
+					<radio value="parents"/><text>家长</text>
 				</label>
 				<label>
 					<radio value="teacher"/><text>教师</text>
+				</label>
+				<label>
+					<radio value="manager"/><text>管理员</text>
 				</label>
 			</radio-group>
 			
@@ -30,7 +30,7 @@
 			</view>
 			<button @tap="login()">登 录</button>
 			<br />
-			<button @tap="register()">注册</button>
+			<button @tap="Toregister()">注册</button>
 		</form>
 		<view class="t-f"><text>————— 第三方账号登录 —————</text></view>
 		<view class="t-e cl">
@@ -43,41 +43,20 @@
 export default {
 	data() {
 		return {
-			title: '欢迎回到班级！', //填写logo或者app名称，也可以用：欢迎回来，看您需求
+			title: '欢迎回到班级！', 
 			role:'',
-			phone: 'root',
-			password:'root',
+			phone: '',
+			password:'',
 		};
 	},
 	onLoad() {
 		this.getLoading();
-		console.log(this.role);
 	},
 	methods: {
-		//当前登录按钮操作
-		login() {
-			//admin1 11111
-			//admin2 22222
-			//admin3 33333
-			if(this.phone == 'admin1' && this.password=='11111'){
-				uni.showToast({
-					title:'管理员账号登录成功！'
-				})
-				uni.reLaunch({
-					url:'/pages/manager/manager'
-				})
-			}
-			if(this.phone == 'root' && this.password == 'root'){
-				uni.reLaunch({
-					url:'/pages/index/index'
-				})
-			}
-			// uni.showToast({ title: '登录成功！', icon: 'none' });
-			// uni.reLaunch({
-			// 	url:'/pages/index/index'
-			// })
+		radioChange(e){
+			this.role = e.detail.value;
 		},
-		register(){
+		Toregister(){
 			uni.reLaunch({
 				url:'/pages/register/register'
 			})
@@ -90,33 +69,60 @@ export default {
 		zfbLogin() {
 			uni.showToast({ title: 'qq登录', icon: 'none' });
 		},
-		//登录验证（未开发）
+		//登录验证
 		login(){
+			let chooselogin;
+			let choosereLaunch;
+			if(this.role === 'teacher'){
+				chooselogin = 'http://localhost:8080/api/teachers/login';
+				choosereLaunch = '/pages/index/index';
+			}
+			if(this.role === 'parents'){
+				chooselogin = 'http://localhost:8080/api/parents/login';
+				choosereLaunch = '/pages/index/index';
+			}
+			if(this.role === 'manager'){
+				chooselogin =  'http://localhost:8080/api/admins/login';
+				choosereLaunch = '/pages/manager/manager';
+			}
+			console.log('即将跳转至:',chooselogin);
+			console.log('页面路径为:',choosereLaunch);
 			uni.request({
-			        url: 'http://localhost:8080/api/teachers/login', // 替换为你的实际 API 端点
+			        url: chooselogin, // 替换为你的实际 API 端点
 			        method: 'POST',
 						header: {
 							'Content-Type': 'application/json'
 						},
-					// withCredentials:true,
+					withCredentials:true,
 					// 允许发送
 			        data: {
 						phone:this.phone,
 						password:this.password,
 						  },
-			        success: (response) => {
-			          console.log('成功:', response.data);
-			          uni.showToast({
-			            title: '登录成功',
-			            icon: 'success'
-			          });
-					  uni.reLaunch({
-					  	url:'/pages/index/index'
-					  })
+			        success: (response) => {						  
+					  if(response.data.message != 'login success'){
+						  uni.showToast({
+							title: response.data.message,
+							icon:'error',
+						  });
+					  }
+					  // 此处识别是否班主任
+					  if(response.data.ismaster){
+						  	choosereLaunch = '/pages/header-teacher/header-teacher';
+					  }
+					  if(response.data.message === 'login success'){
+						  uni.showToast({
+						    title: response.data.message,
+						  	icon:'success',
+						  });
+						  uni.reLaunch({
+						  	url:choosereLaunch,
+						  });
+					  }
 			          // 处理成功的响应
 			        },
 			        fail: (error) => {
-			          console.error('错误:', error);
+			          console.error('请求错误:', error);
 			          uni.showToast({
 			            title: '登录失败',
 			            icon: 'none'
@@ -125,11 +131,20 @@ export default {
 			        }
 			      });
 		},
-		getLoading(){
+		// 页面加载时调用
+		getLoading(){ 
 			uni.request({
-				url: 'http://localhost:8080/', 
+				url: 'http://localhost:8080', 
 				success: (res) => {
-					console.log(res);
+					console.log('当前登陆状态:',res.errMsg);
+				},
+				fail:(error) =>{
+					if(error.errMsg == 'request:fail'){
+						console.log('连接错误：后端连接失败');
+					}
+					else{
+						console.log('连接错误：其他错误');
+					}
 				}
 			});
 		},
@@ -278,7 +293,7 @@ export default {
 }
 .label-flex {
   display: flex;
-  gap: 100px; /* 使用 gap 属性设置水平间距 */
+  gap: 120rpx; /* 使用 gap 属性设置水平间距 */
   margin-bottom: 20px;
 }
 </style>

@@ -4,49 +4,41 @@
 	  <uni-section
 	  type="line" style="margin-bottom: 3px;">
 	  			<view class="box-bg">
-	  				<uni-nav-bar background-color="#1CB1F6" color="white" left-icon="back" right-icon="redo" title="班主任管理界面" @clickLeft="back"/>
+	  				<uni-nav-bar background-color="#1CB1F6" color="white" left-icon="back" right-text="完成" title="请班主任添加新学生!" @clickLeft="back" @clickRight="nextPage"/>
 	  			</view>
 	  </uni-section>
-	  
-    <view class="header">
-      <text class="title">请班主任添加学生</text>
-    </view>
+	
     <view class="content">
+		<view class="text1">
+			现有学生名单
+		</view>
+	  <!-- 新添加学生 -->
+	  <view class="form">
+	    <view v-for="(student, index) in Presentstudents" :key="index" class="form-row">
+	      <input class="show" placeholder="姓名" v-model="student.name" disabled/>
+		  <input class="show" placeholder="性别" v-model="student.sex" disabled/>
+	    </view>
+		<view v-for="(student, index) in Pendingstudents" :key="index" class="form-row">
+		  <input class="show" placeholder="姓名" v-model="student.name" disabled/>
+		  <input class="show" placeholder="性别" v-model="student.sex" disabled/>
+		</view>
 
-      <view class="input-group">
-        <input type="text" v-model="className" placeholder="输入学生名称" />
-		<input type="text" v-model="Sex" placeholder="输入学生性别" />
-        <button @click="addClass">增加学生</button>
-      </view>
-      <view class="class-list">
-        <view v-for="(item, index) in classes" :key="index" class="class-item">
-          <text>{{ item.name }}</text>
-		  <text>{{ item.sex }}</text>
-          <button @click="removeClass(index)">删除</button>
-        </view>
-      </view>
+	  </view>
+	  
+	  <view class="form-row">
+	    <input class="input-name" placeholder="姓名" v-model="newStudent.name" />
+	    <picker mode="selector" :range="sexOptions" class="input-sex" @change="updateNewStudentSex($event)">
+	      <view class="picker">{{ newStudent.sex }}</view>
+	    </picker>
+	    <button class="add-btn" @tap="addStudent">添加学生</button>
+	  </view>
+	  <button class="submit-btn" @tap="submitStudents">提交</button>
+	  
     </view>
   </view>
 </template>
 
 <script>
-	
-function getCookie(c_name){
-	if (document.cookie.length>0){
-		var c_start=document.cookie.indexOf(c_name + "=");
-		if (c_start!=-1){
-			c_start=c_start + c_name.length+1;
-			var c_end=document.cookie.indexOf(";",c_start);
-			if (c_end==-1){ 
-				c_end=document.cookie.length;
-			}
-
-			return unescape(document.cookie.substring(c_start,c_end));
-		}
-	 }
-	return "";
-}
-var uname= getCookie('name');
 
 export default {
   data() {
@@ -55,78 +47,80 @@ export default {
 	  Sex:'',
       classes: [],
 	  profile:[],
+	  Presentstudents: [],
+	  Pendingstudents:[],
+	  newStudent: { name: '', sex: '点击选择性别' },
+	  sexOptions: ['男', '女'],
     }
   },
   onLoad() {
-  	console.log(this.uname);
+	this.getStudents();
   },
   methods: {
-    addClass() {
-		console.log(uname);
-		if(this.className.trim() && this.Sex.trim()){
-			// const formData = {
-			// 		  name : this.className.trim(),
-			// 		  sex : this.Sex.trim(),
-			// 		  master : 	uname,
-			// };
-			// this.classes.push(formData);
-			// this.className = '';
-			// this.Sex = '';
-			// console.log(this.classes)
-			// console.log(formData)
-			uni.request({   
-			        url: 'http://localhost:8080/api/students/addStudent', // 替换为你的实际 API 端点
-			        method: 'POST',
-						header: {
-							'Content-Type': 'application/json'
-						},
-			        data: {
-							name : this.className,
-							sex : this.Sex,
-							master : 4,
-						  },
-			        success: (response) => {
-			          console.log('成功:', response.data);
-						// this.classes.push(formData);
-						// this.className = '';
-						// this.Sex = '';
-			          uni.showToast({
-			            title: '注册成功',
-			            icon: 'success'
-			          });
-			          // 处理成功的响应
-			        },
-			        fail: (error) => {
-			          console.error('错误:', error);
-			          uni.showToast({
-			            title: '注册失败',
-			            icon: 'none'
-			          });
-			          // 处理错误的响应
-			        }
-			      });
-		} else{
-			alert('请输入班级名和性别！');
+	  getStudents() {
+	    // 假设通过接口获取学生数据
+	    uni.request({
+	      url: 'http://localhost:8080/api/students/showStudent',
+		  method:'POST',
+	      success: (res) => {
+			console.log('返回结果',res);
+	        this.Presentstudents = res.data.students;
+	      },
+	    });
+	  },
+	  updateNewStudentSex(event) {
+	    const value = event.detail.value;
+	    this.newStudent.sex = this.sexOptions[value];
+	  },
+	  addStudent() {
+	    if (!this.newStudent.name || this.newStudent.sex === '性别') {
+	      uni.showToast({ title: '请填写完整信息', icon: 'none' });
+	      return;
+	    }
+	    this.Pendingstudents.push({ ...this.newStudent });
+	    this.newStudent = { name: '', sex: '性别' }; 
+	  },
+    submitStudents() {
+		for(var i = 0;i<this.Pendingstudents.length;i++){
+			console.log('这是第',i+1,'个学生的姓名：',this.Pendingstudents[i].name);
+			console.log('这是第',i+1,'个学生的性别：',this.Pendingstudents[i].sex);
+			uni.request({
+				url:'http://localhost:8080/api/students/addStudent',
+				method:'POST',
+				header:{
+					'Content-Type':'application/json'
+				},
+				data: {
+					name:this.Pendingstudents[i].name,
+					sex:this.Pendingstudents[i].sex,
+				},
+				success:(response) =>{
+					console.log('学生提交成功',response.data);
+					this.Pendingstudents = [];
+					uni.showToast({
+						title:'提交成功，请重新加载页面',
+						icon:'none'
+					});
+				}
+			})
 		}
-
     },
-    removeClass(index) {
-      this.classes.splice(index, 1);
-    },
-	submitData() {
-	      axios.post('/api/resource', this.postData)
-	      .then(response => {
-	        console.log(response.data);
-	      })
-	      .catch(error => {
-	        console.error(error);
-	      });
-	    },
+	
+	//上边栏返回下一步功能 
 	back(){
 		uni.reLaunch({
-			url:'/pages/register/register'
+			url:'/pages/login/login'
 		})
-	}
+	},
+	nextPage(){
+		uni.showToast({
+			icon:'success',
+			title:'新学生添加完成'
+		}),
+		uni.reLaunch({
+			url:'/pages/index/index'
+		})
+	},
 	
   }
 }
@@ -134,7 +128,6 @@ export default {
 
 <style>
 .container {
-  padding: 20px;
 }
 .header {
   text-align: center;
@@ -143,6 +136,11 @@ export default {
 .title {
   font-size: 24px;
   font-weight: bold;
+}
+.text1{
+	text-align: center;
+	font-size: 40rpx;
+	margin: 15rpx 0;
 }
 .input-group {
   display: flex;
@@ -160,5 +158,54 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+/* 新css */
+.container {
+  padding: 20rpx;
+}
+.form {
+  width: 100%;
+  margin: 10rpx 0;
+  margin-bottom: 10rpx;
+}
+.form-row {
+  display: flex;
+  align-items: center;
+  margin: 10rpx 0;
+}
+.show{
+	flex: 1;
+	padding: 15rpx;
+	border: 1px solid #ccc;
+	font-size: 30rpx;
+}
+.input-name{
+  flex: 1;
+  padding: 15rpx;
+  margin-right: 10rpx;
+  border: 1px solid #ccc;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+}
+.picker {
+	flex: 1;
+	padding: 15rpx;
+	border: 1px solid #ccc;
+	border-radius: 10rpx;
+	font-size: 30rpx;
+}
+.input-sex {
+  flex: 1;
+  margin-right: 10rpx;
+  border: 1px solid #ccc;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+}
+.add-btn {
+  background-color: #5677fc;
+  color: #fff;
+  border: none;
+  border-radius: 10rpx;
+  font-size: 30rpx;
 }
 </style>

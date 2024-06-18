@@ -51,16 +51,13 @@
 					address: '',
 					imageList: [],
 					video: '',
-				},		
+				},	
+				picture:'',
+				content:'',
 			}
 		},
 
 		methods: {
-			back(){
-				uni.reLaunch({
-					url:'/pages/index/index'
-				})
-			},
 			// 选择媒体类型
 			selectType() {
 				let that = this
@@ -164,29 +161,29 @@
 			// 发布
 			clickCreate() {
 				console.log(this.form);
-				if (!this.form.content) {
-					uni.showToast({
-						title: "请输入内容噢",
-						icon: "error"
-					})
-					return;
-				}
-				this.$request.post("/api/article/save", {
-					"type": 1,
-					"content": this.form.content,
-				}).then((res) => {
-					if (res.message == '保存成功') {
-						uni.showToast({
-							title: '发布成功',
-							duration: 1500,
-							mask: true
-						});
-						setTimeout(() => {
-							uni.redirectTo({
-								url: '/pages/index/index'
-							});
-						}, 1500)
-					}
+				console.log(this.form.imageList)
+				console.log(this.form.content)
+				// 提交代码，暂时封存
+				// uni.request({
+				// 	url:'http://localhost:8080/api/posts/addPost',
+				// 	method:'POST',
+				// 	data:{
+				// 		picture:this.picture,
+				// 		content:this.content,
+				// 	},
+				// 	success(res) {
+				// 		console.log('看看都有什么返回:',res.data);
+				// 		console.log(res.data.message);
+				// 		uni.showToast({
+				// 			title:res.data.message
+				// 		})
+				// 	}
+				// })
+			},
+			
+			back(){
+				uni.reLaunch({
+					url:'/pages/index/index'
 				})
 			},
 		}
@@ -202,8 +199,7 @@
 	}
 
 	.container {
-		//看手机端打开的影响决定
-		//padding: 20rpx 40rpx;
+		// padding: 20rpx 40rpx;
 		overflow: hidden;
 	}
 

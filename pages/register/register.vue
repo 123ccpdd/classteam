@@ -9,7 +9,7 @@
 			请按照提示填写信息，1分钟即可加入班级！
 		</view>
 		<form class="c1">
-			<radio-group @change="registerchange" name="radio" class="label-flex" v-model="role">
+			<radio-group name="radio" class="label-flex" :value="role" @change="radioChange">
 				<label>
 					<radio value="student"/><text>家长</text>
 				</label>
@@ -34,6 +34,7 @@
 				<view class="t-a">
 					<input type="number" name="password" placeholder="请再次输入密码" maxlength="11" v-model="confirmpassword" />
 				</view>
+				<button @tap="stsubmitForm()">注册</button>
 			</view>
 			<!-- 此处是教师注册页面 -->
 			<view class="student-register" v-if="role === 'teacher'">
@@ -46,9 +47,9 @@
 					</label>
 				</checkbox-group>
 				<view class="uni-list">
-					<view class="uni-list-cell">
-						<view class="uni-list-cell-left">
-							当前选择
+					<view class="t-a">
+						<view class="t-b3">
+							当前选择科目
 						</view>
 						<view class="uni-list-cell-db">
 							<picker @change="bindPickerChange" :value="index" :range="array">
@@ -56,9 +57,6 @@
 							</picker>
 						</view>
 					</view>
-				</view>
-				<view class="t-a">
-					{{ismaster}}
 				</view>
 				<view class="t-a">
 					<input name="name" placeholder="请输入姓名" v-model="name" />
@@ -81,13 +79,14 @@
 				<view class="t-a">
 					<input type="number" name="password" placeholder="请再次输入密码" maxlength="11" v-model="confirmpassword" />
 				</view>
+				<button @tap="tcsubmitForm()">注册</button>
 			</view>
-			<button @tap="submitForm()">注册</button>
 		</form>
 	</view>
 </template>
 
 <script>
+	// 设置cookie函数，未经过调用，纯属娱乐
 	function setCookie(c_name,value,expireseconds){
 	    var exdate=new Date();
 	    exdate.setTime(exdate.getTime()+expireseconds * 1000);
@@ -115,26 +114,94 @@
 			}
 		},
 		methods: {
-			submitForm() {
-				// 调试打开
-				// if(this.ismaster == 1){
-				//   uni.reLaunch({
-				// 	url:'/pages/header-teacher/header-teacher'
-				//   })
-				// }
-			  // 表单验证，例如检查密码是否一致
-			  if (this.password !== this.confirmpassword) {
-				uni.showToast({
-				  title: '密码不一致',
-				  icon: 'none'
-				});
+			stsubmitForm(){
+				if (!this.name) {
+					uni.showToast({ title: '姓名不能为空', icon: 'none' });
+					return;
+				}
+				if (!this.sex) {
+					uni.showToast({ title: '性别不能为空', icon: 'none' });
+					return;
+				}
+				if (!this.phone) {
+					uni.showToast({ title: '手机号不能为空', icon: 'none' });
+					return;
+				}
+				if (!this.password) {
+					uni.showToast({ title: '密码不能为空', icon: 'none' });
+					return;
+				}
+				if (!this.confirmpassword) {
+					uni.showToast({ title: '确认密码不能为空', icon: 'none' });
+					return;
+				}
+				if (this.password !== this.confirmpassword) {
+					uni.showToast({ title: '两次输入的密码不一致', icon: 'none' });
+					return;
+				}
+				uni.request({
+				        url: 'http://localhost:8080/api/parents/register', // 替换为你的实际 API 端点
+				        method: 'POST',
+				        data: {
+							name:this.name,
+							sex:this.sex,
+							phone: this.phone,
+							password: this.password,
+						  },
+				        success: (response) => {
+							console.log('后端响应结果:', response.data.message);
+							uni.showToast({
+								title:response.data.message,
+								icon:'none'
+							})
+							console.log('后端id:',response.data.id);			
+				          // 处理成功的响应
+				        },
+				        fail: (error) => {
+				          console.error('请求错误:', error);
+				          uni.showToast({
+				            title: '登录失败',
+				            icon: 'error'
+				          });
+				          // 处理错误的响应
+				        }
+				      });
+			},
+			tcsubmitForm() {
+			// 检查是否为空
+			if (!this.name) {
+				uni.showToast({ title: '姓名不能为空', icon: 'none' });
 				return;
-			  }
-			  
-			  if(this.phone == 'null'){
-				  uni.showKeyboard();
-			  }
-			
+			}
+			if (!this.sex) {
+				uni.showToast({ title: '性别不能为空', icon: 'none' });
+				return;
+			}
+			if (!this.school) {
+				uni.showToast({ title: '学校不能为空', icon: 'none' });
+				return;
+			}
+			if (!this.class) {
+				uni.showToast({ title: '班级不能为空', icon: 'none' });
+				return;
+			}
+			if (!this.phone) {
+				uni.showToast({ title: '手机号不能为空', icon: 'none' });
+				return;
+			}
+			if (!this.password) {
+				uni.showToast({ title: '密码不能为空', icon: 'none' });
+				return;
+			}
+			if (!this.confirmpassword) {
+				uni.showToast({ title: '确认密码不能为空', icon: 'none' });
+				return;
+			}
+			if (this.password !== this.confirmpassword) {
+				uni.showToast({ title: '两次输入的密码不一致', icon: 'none' });
+				return;
+			}
+			console.log(role);
 			uni.request({
 			        url: 'http://localhost:8080/api/teachers/register', // 替换为你的实际 API 端点
 			        method: 'POST',
@@ -149,38 +216,27 @@
 						ismaster:this.ismaster
 					  },
 			        success: (response) => {
-			          console.log('后端响应结果:', response.data);
-					  alert(response.data);
-					  console.log('后端id:',response.data.id);			  
-					  setCookie('header-teacher-id',response.data.id,3600);
-			          uni.showToast({
-			            title: '注册成功',
-			            icon: 'success'
-			          });
-					  if(this.ismaster == 1){
-						  uni.reLaunch({
-						  	url:'/pages/header-teacher/header-teacher'
-						  })
-					  }
-					  else{
-						  uni.reLaunch({
-						  	url:'/pages/login/login'
-						  })
-					  }
+						console.log('后端响应结果:', response.data.message);
+						alert(response.data.message);
+						console.log('后端id:',response.data.id);	
+						uni.showToast({
+							title:response.data.message,
+							icon:'none'
+						})
 			          // 处理成功的响应
 			        },
 			        fail: (error) => {
-			          console.error('错误:', error);
+			          console.error('请求错误:', error);
 			          uni.showToast({
-			            title: '注册失败',
+			            title: '登录失败',
 			            icon: 'none'
 			          });
 			          // 处理错误的响应
 			        }
 			      });
 		},
-		registerchange(e){
-			this.role = e.detail.value
+		radioChange(e){
+			this.role = e.detail.value;
 		},
 		bindPickerChange: function(e) {
 			console.log('是否班主任，携带值为', e.detail.value)
@@ -233,6 +289,17 @@
 }
 
 .t-login input {
+	padding: 0 20rpx 0 120rpx;
+	height: 90rpx;
+	line-height: 90rpx;
+	margin-bottom: 50rpx;
+	background: #f8f7fc;
+	border: 1px solid #e9e9e9;
+	font-size: 28rpx;
+	border-radius: 50rpx;
+}
+
+.t-login picker {
 	padding: 0 20rpx 0 120rpx;
 	height: 90rpx;
 	line-height: 90rpx;
@@ -353,48 +420,6 @@
 	position: relative;
 	padding-bottom: 20rpx;
 }
-.uni-list {
-	background-color: #FFFFFF;
-	position: relative;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-}
-.uni-list:after {
-	position: absolute;
-	z-index: 10;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 1px;
-	content: '';
-	-webkit-transform: scaleY(.5);
-	transform: scaleY(.5);
-	background-color: #c8c7cc;
-}
-.uni-list-cell {
-	position: relative;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-}
-.uni-list-cell-left {
-    white-space: nowrap;
-	font-size:28rpx;
-	padding: 0 30rpx;
-}
-.uni-list-cell-db,
-.uni-list-cell-right {
-	flex: 1;
-}
-.uni-input {
-	height: 50rpx;
-	padding: 15rpx 25rpx;
-	line-height:50rpx;
-	font-size:28rpx;
-	background:#FFF;
-	flex: 1;
-}
+
 
 </style>
