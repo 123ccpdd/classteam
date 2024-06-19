@@ -168,16 +168,32 @@ export default {
   margin: 10rpx 0;
   margin-bottom: 10rpx;
 }
+
 .form-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin: 10rpx 0;
+  margin-bottom: 10px;
+  animation: fadeIn 1s ease-in-out;
 }
-.show{
-	flex: 1;
-	padding: 15rpx;
-	border: 1px solid #ccc;
-	font-size: 30rpx;
+
+.show {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(42, 188, 255, 0.3);
+  border-radius: 5%;
+  padding: 10px;
+  width: 48%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .input-name{
   flex: 1;

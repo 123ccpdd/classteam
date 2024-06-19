@@ -124,7 +124,7 @@ export default {
 			        fail: (error) => {
 			          console.error('请求错误:', error);
 			          uni.showToast({
-			            title: '登录失败',
+			            title: '登录请求失败',
 			            icon: 'none'
 			          });
 			          // 处理错误的响应

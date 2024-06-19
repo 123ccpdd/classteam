@@ -3,14 +3,14 @@
 		<uni-section  
 		type="line" style="margin-bottom: 3px;">
 					<view class="box-bg">
-						<uni-nav-bar background-color="#1CB1F6" color="white" left-icon="back" right-icon="redo" title="欢迎来到班级圈" @clickLeft="back" @clickRight="share" />
+						<uni-nav-bar background-color="#1CB1F6" color="white" left-icon="back" right-icon="redo" title="班级圈" @clickLeft="back" @clickRight="share" />
 					</view>
 		</uni-section>
 	</view>
     <view class="avatar-box">
       <image class="avatar" :src="avatarUrl" @click="Tomyself"/>
 	  <view class="username" @click="Tomyself">
-	  	xxx家长
+	  	{{identity}}（{{subject}}）
 	  </view>
     </view>
 	<view class="out">
@@ -29,9 +29,33 @@
 	export default{
 		data(){
 			return{
+				identity:'',
+				subject:'',
 				avatarUrl:"",
 				listArr:[]
 			}
+		},
+		onLoad(){
+			this.getPicUrl();
+			this.getData();
+			uni.request({
+				url:'http://localhost:8080/api/publics/userInfo',
+				success:res=>{
+					console.log('先看看结果',res.data);
+					console.log('teacher',res.data.teacher);
+					console.log('class:',res.data.class);
+					console.log('school',res.data.school);
+					console.log('user_type',res.data.user_type);
+					if(res.data.user_type === 'teacher'){
+						this.identity = res.data.teacher.name;
+						this.subject = res.data.teacher.subject;
+					}
+					if(res.data.user_type === 'parent'){
+						this.identity = res.data.parent.name;
+						this.subject = res.data.student.name + '家长';
+					}
+				}
+			});
 		},
 		methods:{
 			back(){
@@ -47,6 +71,7 @@
 			getPicUrl(){
 				uni.request({
 					url:"https://api.vvhan.com/api/avatar/rand?type=json",
+					withCredentials:false,
 					success:res=>{
 						console.log(res)
 						this.avatarUrl = res.data.url
@@ -73,10 +98,6 @@
 					url:"/pages/myself/myself"
 				})
 			},
-		},
-		onLoad() {
-			this.getPicUrl();
-			this.getData();
 		},
 	}
 </script>

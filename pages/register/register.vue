@@ -26,6 +26,9 @@
 					<input name="sex" placeholder="请输入性别" v-model="sex"/>
 				</view>
 				<view class="t-a">
+					<input name="name" placeholder="请输入学生学号" v-model="child" />
+				</view>
+				<view class="t-a">
 					<input type="number" name="phone" placeholder="请输入手机号" maxlength="11" v-model="phone" />
 				</view>
 				<view class="t-a">
@@ -103,6 +106,7 @@
 				role:'',
 				name:'',
 				sex:'',
+				child:'',
 				school:'',
 				class:'',
 				phone:'',
@@ -117,25 +121,31 @@
 			stsubmitForm(){
 				if (!this.name) {
 					uni.showToast({ title: '姓名不能为空', icon: 'none' });
-					return;
+					uni.reLaunch({
+						url:'/pages/login/login'
+					});
 				}
-				if (!this.sex) {
+				else if (!this.sex) {
 					uni.showToast({ title: '性别不能为空', icon: 'none' });
 					return;
 				}
-				if (!this.phone) {
+				else if (!this.child) {
+					uni.showToast({ title: '学号不能为空', icon: 'none' });
+					return;
+				}
+				else if (!this.phone) {
 					uni.showToast({ title: '手机号不能为空', icon: 'none' });
 					return;
 				}
-				if (!this.password) {
+				else if (!this.password) {
 					uni.showToast({ title: '密码不能为空', icon: 'none' });
 					return;
 				}
-				if (!this.confirmpassword) {
+				else if (!this.confirmpassword) {
 					uni.showToast({ title: '确认密码不能为空', icon: 'none' });
 					return;
 				}
-				if (this.password !== this.confirmpassword) {
+				else if (this.password !== this.confirmpassword) {
 					uni.showToast({ title: '两次输入的密码不一致', icon: 'none' });
 					return;
 				}
@@ -145,17 +155,27 @@
 				        data: {
 							name:this.name,
 							sex:this.sex,
+							child:this.child,
 							phone: this.phone,
 							password: this.password,
 						  },
 				        success: (response) => {
 							console.log('后端响应结果:', response.data.message);
-							uni.showToast({
-								title:response.data.message,
-								icon:'none'
-							})
-							console.log('后端id:',response.data.id);			
-				          // 处理成功的响应
+							console.log('后端响应id:',response.data.id);
+							if(response.data.message){
+								uni.showToast({
+									title:response.data.message,
+									icon:'none'
+								})
+							}else{
+								uni.showToast({
+									title:'注册成功！',
+									icon:'success'
+								})
+								uni.reLaunch({
+									url:'/pages/login/login'
+								})
+							}
 				        },
 				        fail: (error) => {
 				          console.error('请求错误:', error);
@@ -167,41 +187,44 @@
 				        }
 				      });
 			},
+			
+			//教师注册按钮
 			tcsubmitForm() {
-			// 检查是否为空
 			if (!this.name) {
 				uni.showToast({ title: '姓名不能为空', icon: 'none' });
-				return;
+				uni.reLaunch({
+					url:'/pages/login/login'
+				})
 			}
-			if (!this.sex) {
+			else if (!this.sex) {
 				uni.showToast({ title: '性别不能为空', icon: 'none' });
 				return;
 			}
-			if (!this.school) {
+			else if (!this.school) {
 				uni.showToast({ title: '学校不能为空', icon: 'none' });
 				return;
 			}
-			if (!this.class) {
+			else if (!this.class) {
 				uni.showToast({ title: '班级不能为空', icon: 'none' });
 				return;
 			}
-			if (!this.phone) {
+			else if (!this.phone) {
 				uni.showToast({ title: '手机号不能为空', icon: 'none' });
 				return;
 			}
-			if (!this.password) {
+			else if (!this.password) {
 				uni.showToast({ title: '密码不能为空', icon: 'none' });
 				return;
 			}
-			if (!this.confirmpassword) {
+			else if (!this.confirmpassword) {
 				uni.showToast({ title: '确认密码不能为空', icon: 'none' });
 				return;
 			}
-			if (this.password !== this.confirmpassword) {
+			else if (this.password !== this.confirmpassword) {
 				uni.showToast({ title: '两次输入的密码不一致', icon: 'none' });
 				return;
 			}
-			console.log(role);
+			console.log(this.role);
 			uni.request({
 			        url: 'http://localhost:8080/api/teachers/register', // 替换为你的实际 API 端点
 			        method: 'POST',
@@ -217,13 +240,21 @@
 					  },
 			        success: (response) => {
 						console.log('后端响应结果:', response.data.message);
-						alert(response.data.message);
-						console.log('后端id:',response.data.id);	
-						uni.showToast({
-							title:response.data.message,
-							icon:'none'
-						})
-			          // 处理成功的响应
+						console.log('后端响应id:',response.data.id);	
+						if(response.data.message){
+							uni.showToast({
+								title:response.data.message,
+								icon:'error'
+							})
+						}else{
+							uni.showToast({
+								title:'注册成功！',
+								icon:'success'
+							})
+							uni.reLaunch({
+								url:'/pages/login/login'
+							})
+						}
 			        },
 			        fail: (error) => {
 			          console.error('请求错误:', error);
