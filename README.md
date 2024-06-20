@@ -1,1 +1,2 @@
-记住下载HBuilderX,这是用uni-app做的
+利用HbuilderX制作的app，暂未打包发布，功能尚未完善。
+
