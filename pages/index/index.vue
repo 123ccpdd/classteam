@@ -38,14 +38,15 @@
 		onLoad(){
 			this.getPicUrl();
 			this.getData();
+			const token = uni.getStorageSync('token');
 			uni.request({
-				url:'http://localhost:8080/api/publics/userInfo',
+				url:'http://121.199.172.221:8080/api/publics/userInfo',
+				method:'POST',
+				header:{
+						'token' : token,
+				},
 				success:res=>{
 					console.log('先看看结果',res.data);
-					console.log('teacher',res.data.teacher);
-					console.log('class:',res.data.class);
-					console.log('school',res.data.school);
-					console.log('user_type',res.data.user_type);
 					if(res.data.user_type === 'teacher'){
 						this.identity = res.data.teacher.name;
 						this.subject = res.data.teacher.subject;
@@ -71,7 +72,6 @@
 			getPicUrl(){
 				uni.request({
 					url:"https://api.vvhan.com/api/avatar/rand?type=json",
-					withCredentials:false,
 					success:res=>{
 						console.log(res)
 						this.avatarUrl = res.data.url

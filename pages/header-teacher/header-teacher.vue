@@ -58,10 +58,14 @@ export default {
   },
   methods: {
 	  getStudents() {
+		const token = uni.getStorageSync('token');
 	    // 假设通过接口获取学生数据
 	    uni.request({
-	      url: 'http://localhost:8080/api/students/showStudent',
+	      url: 'http://121.199.172.221:8080/api/students/showStudent',
 		  method:'POST',
+		  header:{
+		  		'token' : token,
+		  },
 	      success: (res) => {
 			console.log('返回结果',res);
 	        this.Presentstudents = res.data.students;
@@ -85,11 +89,13 @@ export default {
 			console.log('这是第',i+1,'个学生的姓名：',this.Pendingstudents[i].name);
 			console.log('这是第',i+1,'个学生的性别：',this.Pendingstudents[i].sex);
 			uni.request({
-				url:'http://localhost:8080/api/students/addStudent',
+				url:'http://121.199.172.221:8080/api/students/addStudent',
 				method:'POST',
 				header:{
-					'Content-Type':'application/json'
+					'Content-Type':'application/json',
+					'token': 'token'
 				},
+				withCredentials:true,
 				data: {
 					name:this.Pendingstudents[i].name,
 					sex:this.Pendingstudents[i].sex,

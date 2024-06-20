@@ -19,12 +19,13 @@ export function createApp() {
     app
   }
 }
+
 // 全局配置withCredentails
-uni.addInterceptor('request', {
-  invoke(args) {
-    // 设置 withCredentials 为 true
-    args.withCredentials = true;
-    return args;
-  }
-})
+// uni.addInterceptor('request', {
+//   invoke(args) {
+//     // 设置 withCredentials 为 true
+//     args.withCredentials = true;
+//     return args;
+//   }
+// })
 // #endif

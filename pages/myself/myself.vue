@@ -64,8 +64,13 @@ export default {
     };
   },
   onLoad() {
+	const token = uni.getStorageSync('token');
   	uni.request({
-  		url:'http://localhost:8080/api/publics/userInfo',
+  		url:'http://121.199.172.221:8080/api/publics/userInfo',
+		method:'POST',
+		header:{
+			'token':token,
+		},
   		success:res=>{
   			console.log('先看看结果',res.data);
   			console.log('teacher',res.data.teacher);

@@ -56,10 +56,14 @@ export default {
   },
   methods: {
 	  getClass() {
+		const token = uni.getStorageSync('token');
 	    // 假设通过接口获取班级数据
 	    uni.request({
-	      url: 'http://localhost:8080/api/classes/showClass',
-		  method:'GET',
+	      url: 'http://121.199.172.221:8080/api/classes/showClass',
+		  method:'POST',
+		  header:{
+			'token':token,  
+		  },
 	      success: (res) => {
 			  if(res.statusCode == '200'){
 				console.log('返回结果',res.data);
@@ -83,6 +87,7 @@ export default {
 	    this.newClass = { name: '点击选择班级', profile:'' }; 
 	  },
     submitStudents() {
+		const token = uni.getStorageSync('token');
 		for(var i = 0;i<this.Pendingclasses.length;i++){
 			console.log('这是第',i+1,'个班级的名称：',this.Pendingclasses[i].name);
 			console.log('这是第',i+1,'个班级的描述：',this.Pendingclasses[i].profile);
@@ -90,7 +95,8 @@ export default {
 				url:'http://localhost:8080/api/classes/addClass',
 				method:'POST',
 				header:{
-					'Content-Type':'application/json'
+					'Content-Type':'application/json',
+					'token':token,
 				},
 				data: {
 					name:this.Pendingclasses[i].name,

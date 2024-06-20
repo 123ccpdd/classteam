@@ -74,15 +74,15 @@ export default {
 			let chooselogin;
 			let choosereLaunch;
 			if(this.role === 'teacher'){
-				chooselogin = 'http://localhost:8080/api/teachers/login';
+				chooselogin = 'http://121.199.172.221:8080/api/teachers/login';
 				choosereLaunch = '/pages/index/index';
 			}
 			if(this.role === 'parents'){
-				chooselogin = 'http://localhost:8080/api/parents/login';
+				chooselogin = 'http://121.199.172.221:8080/api/parents/login';
 				choosereLaunch = '/pages/index/index';
 			}
 			if(this.role === 'manager'){
-				chooselogin =  'http://localhost:8080/api/admins/login';
+				chooselogin =  'http://121.199.172.221:8080/api/admins/login';
 				choosereLaunch = '/pages/manager/manager';
 			}
 			console.log('即将跳转至:',chooselogin);
@@ -90,16 +90,28 @@ export default {
 			uni.request({
 			        url: chooselogin, // 替换为你的实际 API 端点
 			        method: 'POST',
-						header: {
-							'Content-Type': 'application/json'
-						},
-					withCredentials:true,
-					// 允许发送
+					header: {
+							'Content-Type': 'application/json',
+					},
+					// withCredentials:true,
+					// 允许发送Cookie
 			        data: {
 						phone:this.phone,
 						password:this.password,
 						  },
-			        success: (response) => {						  
+			        success: (response) => {	
+						console.log('header:',response.header);
+						console.log('data:',response.data);
+						console.log('token有吗:',response.data.token);
+						const token = response.data.token;
+						// 存入storage里面
+						uni.setStorage({
+							key:'token',
+							data:token,
+							success:()=>{
+								console.log('token已存储到Storage');
+							}
+						});
 					  if(response.data.message != 'login success'){
 						  uni.showToast({
 							title: response.data.message,
@@ -134,7 +146,7 @@ export default {
 		// 页面加载时调用
 		getLoading(){ 
 			uni.request({
-				url: 'http://localhost:8080', 
+				url: 'http://121.199.172.221:8080',
 				success: (res) => {
 					console.log('当前登陆状态:',res.errMsg);
 				},
